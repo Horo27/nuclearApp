@@ -1,0 +1,17 @@
+###send a message
+
+POST http://localhost:3002/api/chat/messages
+Content-Type: application/json
+
+{
+    "senderId": "user123",
+    "receiverId": "user456",
+    "message": "Hello, how are you?"
+}
+
+###respond to a message
+
+GET http://localhost:3002/api/chat/messages/:userId1/:userId2
+Content-Type: application/json
+
+
