@@ -33,4 +33,50 @@ const getChatHistory = async (req, res) => {
     }
 };
 
-module.exports = { sendMessage, getChatHistory };
+// Get conversations for a specific user
+const getConversations = async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const conversations = await Message.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { senderId: userId },
+                        { receiverId: userId }
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        $cond: [
+                            { $lt: ["$senderId", "$receiverId"] },
+                            { $concat: ["$senderId", "_", "$receiverId"] },
+                            { $concat: ["$receiverId", "_", "$senderId"] }
+                        ]
+                    },
+                    participants: { $addToSet: "$senderId" },
+                    lastMessage: { $last: "$$ROOT" },
+                    unreadCount: {
+                        $sum: {
+                            $cond: [
+                                { $and: [{ $eq: ["$receiverId", userId] }, { $eq: ["$read", false] }] },
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                }
+            }
+        ]);
+
+        res.status(200).json({ conversations });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to retrieve conversations' });
+    }
+}
+
+
+module.exports = { sendMessage, getChatHistory, getConversations };

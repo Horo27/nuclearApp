@@ -5,12 +5,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
     ports:
       - "3001:3001"
     depends_on:
-      - backend
+      - login-service
+      - chat-service
 
-  backend:
+  login-service:
     build:
       context: ./login-service
       dockerfile: Dockerfile
@@ -22,3 +25,12 @@ services:
       - DB_USER=admin
       - DB_PASSWORD=admin
       - DB_DATABASE=nuclearAppUsersDB
+  
+  chat-service:
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGO_URI=mongodb://localhost:27017/chat-service

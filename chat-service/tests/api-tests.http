@@ -9,9 +9,21 @@ Content-Type: application/json
     "message": "Hello, how are you?"
 }
 
-###respond to a message
+###send a message
 
-GET http://localhost:3002/api/chat/messages/:userId1/:userId2
+POST http://localhost:3002/api/chat/messages
 Content-Type: application/json
 
+{
+    "senderId": "user456",
+    "receiverId": "user123",
+    "message": "Good, what about you?"
+}
 
+###respond to a message
+
+GET http://localhost:3002/api/chat/messages/user123/user456
+
+
+###get conversation history of a user
+GET http://localhost:3002/api/chat/conversations/user123

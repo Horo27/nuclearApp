@@ -12,8 +12,13 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
+
+// Serve the chat HTML file
+app.get('/chat', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'chat.html'));
+})
 
 // Start the server
 app.listen(PORT, () => {

@@ -63,6 +63,15 @@ function showScreen(screen) {
         updateDashboard();
     }
 }
+function renderHtmlFile(res, filePath) {
+    const absolutePath = path.join(__dirname, filePath);
+    res.sendFile(absolutePath, (err) => {
+        if (err) {
+            console.error(`Error rendering file: ${filePath}`, err);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+}
 // Handle Login
 async function handleLogin(e) {
     e.preventDefault();
@@ -88,17 +97,7 @@ async function handleLogin(e) {
         const data = await response.json();
         console.log('Login successful:', data);
 
-        // Update state with user data
-        state.user = {
-            name: data.name,
-            email: email,
-            // profession: data.profession || 'Unknown',
-            // bio: data.bio || 'No bio provided',
-            // profileImage: data.profileImage || 'https://via.placeholder.com/150',
-            // galleryImages: data.galleryImages || [],
-        };
-
-        showScreen('dashboard');
+        window.location.href = "/chat"
     } catch (err) {
         console.error('Error during login:', err);
         alert('An error occurred while logging in. Please try again.');
@@ -133,16 +132,7 @@ async function handleSignup(e) {
         console.log('Signup successful:', data);
 
         // Automatically log in the user after signup
-        state.user = {
-            name: name,
-            email: email,
-            profession: profession,
-            bio: bio,
-            profileImage: state.profileImage || 'https://via.placeholder.com/150',
-            galleryImages: state.galleryImages.length > 0 ? state.galleryImages : [],
-        };
-
-        showScreen('dashboard');
+        window.location.href = "/chat"
     } catch (err) {
         console.error('Error during signup:', err);
         alert('An error occurred while signing up. Please try again.');
