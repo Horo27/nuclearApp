@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { poolPromise, sql } = require('../utils/db');
+const { poolPromise, sql } = require('../utils/db.js');
 const config = require('../config');
 
 class LoginController {
@@ -50,7 +50,7 @@ class LoginController {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            const token = jwt.sign({ id: user.id, email: user.email }, config.JWT_SECRET, {
+            const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, config.JWT_SECRET, {
                 expiresIn: '1h',
             });
 

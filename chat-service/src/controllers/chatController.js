@@ -1,4 +1,5 @@
 const Message = require('../models/messageModel');
+const { poolPromise } = require('../../../login-service/src/utils/db')
 
 // Send a message
 const sendMessage = async (req, res) => {
