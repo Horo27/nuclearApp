@@ -4,9 +4,9 @@ POST http://localhost:3002/api/chat/messages
 Content-Type: application/json
 
 {
-    "senderId": "user123",
-    "receiverId": "user456",
-    "message": "Hello, how are you?"
+    "senderId": "4",
+    "receiverId": "7",
+    "message": "Hello, this is a test message. Have you received it?"
 }
 
 ###send a message
@@ -15,15 +15,34 @@ POST http://localhost:3002/api/chat/messages
 Content-Type: application/json
 
 {
-    "senderId": "user456",
-    "receiverId": "user123",
-    "message": "Good, what about you?"
+    "senderId": "7",
+    "receiverId": "4",
+    "message": "Yes I have, this is another message."
 }
 
-###respond to a message
+###Get all messages between two users
 
-GET http://localhost:3002/api/chat/messages/user123/user456
+GET http://localhost:3002/api/chat/messages/7/4
 
 
 ###get conversation history of a user
-GET http://localhost:3002/api/chat/conversations/user123
+GET http://localhost:3002/api/chat/conversations/7
+
+
+####get conversation history of a user with the auth middleware
+GET http://localhost:3002/api/chat/conversations
+
+
+###Get all messages between two users with auth middleware
+
+GET http://localhost:3002/api/chat/messages/4
+
+###send a message with auth middleware
+
+POST http://localhost:3002/api/chat/messages
+Content-Type: application/json
+
+{
+    "receiverId": "7",
+    "message": "Hello, this is a test message. Have you received it?"
+}

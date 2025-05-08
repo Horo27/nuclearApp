@@ -12,6 +12,8 @@ services:
     depends_on:
       - login-service
       - chat-service
+    networks:
+      - app-network
 
   login-service:
     build:
@@ -25,6 +27,8 @@ services:
       - DB_USER=admin
       - DB_PASSWORD=admin
       - DB_DATABASE=nuclearAppUsersDB
+    networks:
+      - app-network
   
   chat-service:
     build:
@@ -33,18 +37,27 @@ services:
     ports:
       - "3002:3002"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/chat-service 
+      - MONGO_URI=mongodb://mongo:27017/NuclearAppMessages
     depends_on:
       - mongo
+    volumes:
+      - ./login-service/src/utils/authorize.js:/app/src/utils/authorize.js
+    networks:
+      - app-network
 
   mongo:
     image: mongo:5.0
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo_data:/data/db
-    command: mongod --quiet
+    networks:
+      - app-network
+    
 
 volumes:
   mongo_data:
+
+networks:
+  app-network:

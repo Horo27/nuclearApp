@@ -1,11 +1,11 @@
 ### Register a New User
-POST http://localhost:3000/api/login/register
+POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "password123"
+    "name": "Monica Geller",
+    "email": "test2@test.com",
+    "password": "12345"
 }
 
 ### Login a User
@@ -25,3 +25,6 @@ Content-Type: application/json
     "email": "test@test.com",
     "password": "12345"
 }
+
+### verify the existence of the user
+GET http://localhost:3000/api/auth/getUser

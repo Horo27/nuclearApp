@@ -1,5 +1,4 @@
 const Message = require('../models/messageModel');
-const { poolPromise } = require('../../../login-service/src/utils/db')
 
 // Send a message
 const sendMessage = async (req, res) => {
@@ -78,6 +77,5 @@ const getConversations = async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve conversations' });
     }
 }
-
 
 module.exports = { sendMessage, getChatHistory, getConversations };

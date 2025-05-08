@@ -273,22 +273,13 @@ function renderMessage(message, conversation) {
     }
 }
 
-// // Load all conversations
-// function loadConversations() {
-//     // TODO: Replace with API call to fetch conversations
-//     // fetch('/api/conversations')
-//     //   .then(response => response.json())
-//     //   .then(data => {
-//     //       conversations = data;
-//     //       renderConversations();
-//     //   });
-
-//     renderConversations();
-// }
-
 async function loadConversations() {
     try {
-        const response = await fetch(`http://localhost:3002/api/chat/conversations/${currentUser.id}`);
+        const response = await fetch(`http://localhost:3002/api/chat/conversations`,{
+            method: 'GET',
+            credentials: 'include', // Include cookies in the request
+        });
+        
         if (!response.ok) {
             throw new Error('Failed to fetch conversations');
         }
@@ -302,8 +293,8 @@ async function loadConversations() {
             lastMessage: {
                 sender: conv.lastMessage.senderId,
                 text: conv.lastMessage.message,
-                timestamp: conv.lastMessage.timestamp,
-                read: conv.lastMessage.read
+                timestamp: conv.lastMessage.timestamp//,
+                //read: conv.lastMessage.read
             },
             unreadCount: conv.unreadCount,
             isTyping: [] // Placeholder for typing indicator
@@ -358,6 +349,13 @@ async function loadConversation(conversationId) {
     const conversation = conversations.find(c => c.id === conversationId);
     if (!conversation) return;
 
+    // Extract the reciever ID
+    const receiver = conversation.participants.find(p => p.id !== currentUser.id);
+    if (!receiver) {
+        console.error('Receiver not found in conversation participants');
+        return;
+    }
+
     // Update chat header
     updateChatHeader(conversation);
 
@@ -366,7 +364,9 @@ async function loadConversation(conversationId) {
     emptyState.style.display = 'none';
 
     try {
-        const response = await fetch(`http://localhost:3002/api/chat/messages/${currentUser.id}/${conversationId}`);
+        const response = await fetch(`http://localhost:3002/api/chat/messages/${receiver.id}`,{
+            credentials: 'include' // Include cookies in the request
+        });
         if (!response.ok) {
             throw new Error('Failed to fetch messages');
         }
@@ -514,13 +514,12 @@ function renderMessages(messages, conversation) {
 }
 
 // Send a new message
-function sendMessage() {
+async function sendMessage() {
     const messageText = messageInput.value.trim();
     if (!messageText || !activeConversationId) return;
 
     // Create new message object
     const newMessage = {
-        id: `msg-${Date.now()}`,
         sender: currentUser.id,
         text: messageText,
         timestamp: new Date().toISOString(),
@@ -539,57 +538,88 @@ function sendMessage() {
     // Clear input
     messageInput.value = '';
 
-    // TODO: Replace with API call to send message
-    // fetch(`/api/conversations/${activeConversationId}/messages`, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //         text: messageText
-    //     })
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //     // Update message status to delivered
-    //     const messageElement = document.querySelector(`[data-message-id="${newMessage.id}"]`);
-    //     if (messageElement) {
-    //         const statusElement = messageElement.querySelector('.message-status');
-    //         if (statusElement) {
-    //             statusElement.textContent = 'Delivered';
-    //         }
-    //     }
-    // });
+    try {
+        const response = await fetch('http://localhost:3002/api/chat/messages', {
+            method: 'POST',
+            credentials: 'include', // Include cookies in the request
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                receiverId: activeConversationId, // Backend expects receiverId
+                message: messageText,
+            }),
+        });
 
-    // For demo purposes, update the status after a delay
-    setTimeout(() => {
-        newMessage.status = 'delivered';
-        const messageElements = document.querySelectorAll('.message-bubble');
-        if (messageElements.length > 0) {
-            const lastMessage = messageElements[messageElements.length - 1];
-            const statusElement = lastMessage.parentElement.querySelector('.text-xs');
-            if (statusElement) {
-                statusElement.textContent = `${formatDateTime(newMessage.timestamp)} • Delivered`;
-            }
+        if (!response.ok) {
+            throw new Error('Failed to send message');
         }
-    }, 1000);
 
-    // Update last message in conversation
-    if (conversation) {
-        conversation.lastMessage = {
-            sender: currentUser.id,
-            text: messageText,
-            timestamp: newMessage.timestamp,
-            read: false
-        };
+        const data = await response.json();
 
-        // Re-render conversation list
+        // Update message status to delivered
+        setTimeout(() => {
+            newMessage.status = 'delivered';
+            const messageElements = document.querySelectorAll('.message-bubble');
+            if (messageElements.length > 0) {
+                const lastMessage = messageElements[messageElements.length - 1];
+                const statusElement = lastMessage.parentElement.querySelector('.text-xs');
+                if (statusElement) {
+                    statusElement.textContent = `${formatDateTime(newMessage.timestamp)} • Delivered`;
+                }
+            }
+        }, 1000);
+
         renderConversations();
+    } catch (err) {
+        console.error('Error sending message:', err);
+    }
+
+    // // Update last message in conversation
+    // if (conversation) {
+    //     conversation.lastMessage = {
+    //         sender: currentUser.id,
+    //         text: messageText,
+    //         timestamp: newMessage.timestamp,
+    //         read: false
+    //     };
+}
+
+async function fetchCurrentUser() {
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/getUser', {
+            method: 'GET',
+            credentials: 'include', // Include cookies in the request
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch current user');
+        }
+
+        const data = await response.json();
+        return data.user; // Return the user data
+    } catch (err) {
+        console.error('Error fetching current user:', err);
+        return null;
     }
 }
 
 // Initialize the app
-function init() {
+async function init() {
+
+    // Fetch the current user
+    const user = await fetchCurrentUser();
+    if (!user) {
+        console.error('User not authenticated. Redirecting to login...');
+        window.location.href = '/'; // Redirect to login page if not authenticated
+        return;
+    }
+
+    // Set the current user
+    currentUser.id = user.id;
+    currentUser.name = user.name;
+    currentUser.avatar = user.avatar || currentUser.avatar; // Use default avatar if not provided
+
     loadConversations();
 
     // Event listeners
@@ -630,4 +660,7 @@ function init() {
 }
 
 // Start the app
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', async () => {
+    await init();
+});
+ 

@@ -81,6 +81,7 @@ async function handleLogin(e) {
     try {
         const response = await fetch('http://localhost:3000/api/auth/login', {
             method: 'POST',
+            credentials: 'include', // Include cookies in the request
             headers: {
                 'Content-Type': 'application/json',
             },

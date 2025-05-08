@@ -9,5 +9,7 @@ router.post('/login', loginController.login);
 // Route for user registration (if applicable)
 router.post('/register', loginController.register);
 
+// Route for jwt token verification
+router.get('/getUser', loginController.getUser);
 
 module.exports = router;

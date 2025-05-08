@@ -3,7 +3,10 @@ const config = require('../config');
 
 const authorize = (requiredRoles) => {
     return (req, res, next) => {
-        const token = req.headers.authorization?.split(' ')[1];
+        const token = req.cookies.token
+
+        console.log("toker in authorize", token)    
+
         if (!token) {
             return res.status(401).json({ error: 'Unauthorized' });
         }

@@ -4,21 +4,19 @@ const bodyParser = require('body-parser');
 const loginRoutes = require('./routes/loginRoutes');
 const config = require('./config');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3001', // Allow requests from the frontend server
+    credentials: true // Allow cookies to be sent with requests
+}));
 
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// app.get('/', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'views', 'index.html'));
-// });
-
-// Serve static files
-// app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', loginRoutes);

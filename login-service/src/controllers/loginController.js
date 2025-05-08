@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { poolPromise, sql } = require('../utils/db.js');
+const { poolPromise, sql } = require('../utils/db');
 const config = require('../config');
 
 class LoginController {
@@ -50,14 +50,41 @@ class LoginController {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, config.JWT_SECRET, {
+            const token = jwt.sign({ id: user.id, role: user.role }, config.JWT_SECRET, {
                 expiresIn: '1h',
             });
 
-            res.status(200).json({ message: 'Login successful', token });
+            //send the jwt in a http-only cookie
+            // This prevents JavaScript from accessing the token, enhancing security
+            res.cookie('token', token, {
+                httpOnly: true, // Prevent JavaScript access
+                sameSite: 'Lax', // Prevent CSRFS
+                maxAge: 3600000, // 1 hour in milliseconds
+            });
+            console.log("cookie: ", token); // Log the cookie for debugging
+
+            res.status(200).json({ message: 'Login successful'});
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async getUser(req, res) {
+        const token = req.cookies.token; // Extract the token from the cookie
+        
+        console.log("token: ", req.cookies); // Log the token for debugging
+
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        try {
+            const decoded = jwt.verify(token, config.JWT_SECRET); // Decode the JWT
+            res.status(200).json({ user: decoded }); // Send the user data to the frontend
+        } catch (err) {
+            console.error('Error decoding JWT:', err);
+            res.status(401).json({ error: 'Invalid token' });
         }
     }
 }
