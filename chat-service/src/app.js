@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Routes
-app.use('/api/chat', chatRoutes);
+app.use('/chat', chatRoutes);
 
 // Start the server
 const PORT = config.PORT || 3002;

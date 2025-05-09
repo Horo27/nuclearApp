@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Routes
-app.use('/api/auth', loginRoutes);
+app.use('/auth', loginRoutes);
 
 // Start the server
 const PORT = config.PORT || 3000;

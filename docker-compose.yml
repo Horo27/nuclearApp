@@ -54,7 +54,18 @@ services:
       - mongo_data:/data/db
     networks:
       - app-network
-    
+  
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000" # Expose port 4000 for the API Gateway
+    depends_on:
+      - login-service
+      - chat-service
+    networks:
+      - app-network
 
 volumes:
   mongo_data:
