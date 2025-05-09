@@ -8,133 +8,10 @@ const currentUser = {
 };
 
 // Sample conversations data (TODO: Replace with API call to backend)
-const conversations = [
-    {
-        id: 'conv-1',
-        type: 'group',
-        name: 'Coffee Lovers',
-        participants: [
-            {
-                id: 'user-2',
-                name: 'Jane Cooper',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'online'
-            },
-            {
-                id: 'user-3',
-                name: 'Michael Smith',
-                avatar: 'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'offline'
-            }
-        ],
-        lastMessage: {
-            sender: 'user-2',
-            text: 'The new blend is amazing!',
-            timestamp: '2023-06-15T12:45:00Z',
-            read: false
-        },
-        unreadCount: 3,
-        isTyping: ['user-2']
-    },
-    {
-        id: 'conv-2',
-        type: 'group',
-        name: 'Barista Team',
-        participants: [
-            {
-                id: 'user-4',
-                name: 'Alex Johnson',
-                avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'online'
-            },
-            {
-                id: 'user-5',
-                name: 'Sarah Williams',
-                avatar: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-                status: 'online'
-            }
-        ],
-        lastMessage: {
-            sender: 'user-4',
-            text: 'Don\'t forget the staff meeting',
-            timestamp: '2023-06-15T10:30:00Z',
-            read: true
-        },
-        unreadCount: 0,
-        isTyping: []
-    },
-    {
-        id: 'conv-3',
-        type: 'direct',
-        name: 'Jane Cooper',
-        participants: [
-            {
-                id: 'user-2',
-                name: 'Jane Cooper',
-                avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                status: 'online'
-            }
-        ],
-        lastMessage: {
-            sender: 'user-2',
-            text: 'Thanks for the coffee this morning!',
-            timestamp: '2023-06-15T09:15:00Z',
-            read: false
-        },
-        unreadCount: 1,
-        isTyping: []
-    }
-];
+let conversations = [];
 
 // Sample messages data (TODO: Replace with API call to backend when a conversation is selected)
-const messages = {
-    'conv-1': [
-        {
-            id: 'msg-1',
-            sender: 'user-2',
-            text: 'Hey everyone! Just tried the new seasonal blend and it\'s amazing!',
-            timestamp: '2023-06-15T12:45:00Z',
-            type: 'text'
-        },
-        {
-            id: 'msg-2',
-            sender: currentUser.id,
-            text: 'I know right? It\'s my favorite so far this year!',
-            timestamp: '2023-06-15T12:47:00Z',
-            type: 'text',
-            status: 'delivered'
-        },
-        {
-            id: 'msg-3',
-            sender: 'user-3',
-            text: 'Check out this latte art I made with the new blend!',
-            timestamp: '2023-06-15T12:49:00Z',
-            type: 'image',
-            imageUrl: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80'
-        },
-        {
-            id: 'msg-4',
-            sender: currentUser.id,
-            text: 'Wow that\'s incredible! You\'ve really improved!',
-            timestamp: '2023-06-15T12:51:00Z',
-            type: 'text',
-            status: 'delivered'
-        },
-        {
-            id: 'msg-5',
-            sender: 'user-2',
-            text: 'We should feature this on our Instagram. Customers will love it!',
-            timestamp: '2023-06-15T12:52:00Z',
-            type: 'text'
-        }
-    ],
-    'conv-2': [
-        // Messages for Barista Team conversation
-    ],
-    'conv-3': [
-        // Messages for direct conversation with Jane
-    ]
-};
+let messages = {};
 
 // DOM elements
 const conversationsList = document.getElementById('conversations-list');
@@ -235,10 +112,10 @@ function renderConversationItem(conversation) {
 
 // Render message
 function renderMessage(message, conversation) {
-    const isCurrentUser = message.sender === currentUser.id;
+    const isCurrentUser = message.senderId === currentUser.id;
     const sender = isCurrentUser ? currentUser :
         conversation.type === 'direct' ? conversation.participants[0] :
-            conversation.participants.find(p => p.id === message.sender) || { name: 'Unknown', avatar: '' };
+            conversation.participants.find(p => p === message.senderId) || { name: 'Unknown', avatar: '' };
 
     const messageTime = formatDateTime(message.timestamp);
 
@@ -248,8 +125,8 @@ function renderMessage(message, conversation) {
                         <div class="text-right">
                             <div class="message-bubble sent-message px-4 py-2 mb-1">
                                 ${message.type === 'image' ?
-                `<img src="${message.imageUrl}" alt="Shared image" class="w-full max-w-xs rounded-lg mb-2">` : ''}
-                                <p>${message.text}</p>
+                `<img src="${currentUser.avatar}" alt="Shared image" class="w-full max-w-xs rounded-lg mb-2">` : ''}
+                                <p>${message.message}</p>
                             </div>
                             <span class="text-xs text-gray-500">${messageTime} • ${message.status || 'Sent'}</span>
                         </div>
@@ -259,14 +136,14 @@ function renderMessage(message, conversation) {
     } else {
         return `
                     <div class="flex mb-4">
-                        <img src="${sender.avatar}" alt="${sender.name}" class="h-8 w-8 rounded-full object-cover mr-2 mt-1">
+                        <img src="${currentUser.avatar}" alt="${message.receiverId}" class="h-8 w-8 rounded-full object-cover mr-2 mt-1">
                         <div>
                             <div class="message-bubble received-message px-4 py-2 mb-1">
                                 ${message.type === 'image' ?
-                `<img src="${message.imageUrl}" alt="Shared image" class="w-full max-w-xs rounded-lg mb-2">` : ''}
-                                <p>${message.text}</p>
+                `<img src="${currentUser.avatar}" alt="Shared image" class="w-full max-w-xs rounded-lg mb-2">` : ''}
+                                <p>${message.message}</p>
                             </div>
-                            <span class="text-xs text-gray-500">${sender.name} • ${messageTime}</span>
+                            <span class="text-xs text-gray-500">${message.senderId} • ${messageTime}</span>
                         </div>
                     </div>
                 `;
@@ -350,7 +227,8 @@ async function loadConversation(conversationId) {
     if (!conversation) return;
 
     // Extract the reciever ID
-    const receiver = conversation.participants.find(p => p.id !== currentUser.id);
+    const receiver = conversation.participants.find(p => p !== currentUser.id);
+
     if (!receiver) {
         console.error('Receiver not found in conversation participants');
         return;
@@ -364,7 +242,8 @@ async function loadConversation(conversationId) {
     emptyState.style.display = 'none';
 
     try {
-        const response = await fetch(`http://localhost:3002/api/chat/messages/${receiver.id}`,{
+        const response = await fetch(`http://localhost:3002/api/chat/messages/${receiver}`,{
+            method: 'GET',
             credentials: 'include' // Include cookies in the request
         });
         if (!response.ok) {
@@ -372,6 +251,7 @@ async function loadConversation(conversationId) {
         }
 
         const data = await response.json();
+
         renderMessages(data.messages, conversation);
     } catch (err) {
         console.error('Error loading conversation messages:', err);
@@ -459,6 +339,7 @@ function updateChatHeader(conversation) {
 
 // Render messages for a conversation
 function renderMessages(messages, conversation) {
+
     if (messages.length === 0) {
         messagesContainer.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-center px-4">
@@ -517,23 +398,26 @@ function renderMessages(messages, conversation) {
 async function sendMessage() {
     const messageText = messageInput.value.trim();
     if (!messageText || !activeConversationId) return;
-
+    
+    const conversation = conversations.find(c => c.id === activeConversationId);
+    
+    const receiver = conversation.participants.find(p => p !== currentUser.id);
+    
     // Create new message object
     const newMessage = {
-        sender: currentUser.id,
-        text: messageText,
+        senderId: currentUser.id,
+        message: messageText,
         timestamp: new Date().toISOString(),
-        type: 'text',
-        status: 'sending'
+        receiverId: receiver
     };
-
+    
     // Add to UI immediately for better UX
-    const conversation = conversations.find(c => c.id === activeConversationId);
     if (conversation) {
         const messagesContainer = document.getElementById('messages-container');
         messagesContainer.innerHTML += renderMessage(newMessage, conversation);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+
 
     // Clear input
     messageInput.value = '';
@@ -546,7 +430,7 @@ async function sendMessage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                receiverId: activeConversationId, // Backend expects receiverId
+                receiverId: receiver, // Backend expects receiverId
                 message: messageText,
             }),
         });
@@ -574,15 +458,6 @@ async function sendMessage() {
     } catch (err) {
         console.error('Error sending message:', err);
     }
-
-    // // Update last message in conversation
-    // if (conversation) {
-    //     conversation.lastMessage = {
-    //         sender: currentUser.id,
-    //         text: messageText,
-    //         timestamp: newMessage.timestamp,
-    //         read: false
-    //     };
 }
 
 async function fetchCurrentUser() {
@@ -616,7 +491,7 @@ async function init() {
     }
 
     // Set the current user
-    currentUser.id = user.id;
+    currentUser.id = String(user.id);
     currentUser.name = user.name;
     currentUser.avatar = user.avatar || currentUser.avatar; // Use default avatar if not provided
 
