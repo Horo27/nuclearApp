@@ -8,7 +8,7 @@ const app = express();
 const PORT = 3001; // Port for the frontend server
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from the login service
+    origin: 'http://localhost:4000', // Allow requests from the API Gateway
     credentials: true // Allow cookies to be sent with requests
 }));
 app.use(cookieParser())

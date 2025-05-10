@@ -79,7 +79,7 @@ async function handleLogin(e) {
     const password = document.getElementById('login-password').value;
 
     try {
-        const response = await fetch('http://localhost:4000/gateway/auth/login', {
+        const response = await fetch('http://localhost:4000/auth-gateway/auth/login', {
             method: 'POST',
             credentials: 'include', // Include cookies in the request
             headers: {
@@ -114,7 +114,7 @@ async function handleSignup(e) {
     const bio = document.getElementById('signup-bio').value;
 
     try {
-        const response = await fetch('http://localhost:4000/gateway/auth/register', {
+        const response = await fetch('http://localhost:4000/api-gateway/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

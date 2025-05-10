@@ -10,10 +10,7 @@ const cors = require('cors'); // Importing CORS for cross-origin requests
 const app = express();
 
 //Cord config
-app.use(cors({
-    origin: 'http://localhost:3001', // Allow requests from the frontend server
-    credentials: true // Allow cookies to be sent with requests
-}));
+//app.use(cors());
 
 // Middleware
 app.use(bodyParser.json());

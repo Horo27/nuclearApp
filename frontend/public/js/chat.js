@@ -152,7 +152,7 @@ function renderMessage(message, conversation) {
 
 async function loadConversations() {
     try {
-        const response = await fetch(`http://localhost:4000/gateway/chat/conversations`,{
+        const response = await fetch(`http://localhost:4000/chat-gateway/chat/conversations`,{
             method: 'GET',
             credentials: 'include', // Include cookies in the request
         });
@@ -242,7 +242,7 @@ async function loadConversation(conversationId) {
     emptyState.style.display = 'none';
 
     try {
-        const response = await fetch(`http://localhost:4000/gateway/chat/messages/${receiver}`,{
+        const response = await fetch(`http://localhost:4000/chat-gateway/chat/messages/${receiver}`,{
             method: 'GET',
             credentials: 'include' // Include cookies in the request
         });
@@ -423,7 +423,7 @@ async function sendMessage() {
     messageInput.value = '';
 
     try {
-        const response = await fetch('http://localhost:4000/gateway/chat/messages', {
+        const response = await fetch('http://localhost:4000/chat-gateway/chat/messages', {
             method: 'POST',
             credentials: 'include', // Include cookies in the request
             headers: {
@@ -462,7 +462,7 @@ async function sendMessage() {
 
 async function fetchCurrentUser() {
     try {
-        const response = await fetch('http://localhost:4000/gateway/auth/getUser', {
+        const response = await fetch('http://localhost:4000/auth-gateway/auth/getUser', {
             method: 'GET',
             credentials: 'include', // Include cookies in the request
         });
