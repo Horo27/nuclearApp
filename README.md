@@ -1,12 +1,14 @@
 🗨️ Microservice Chat App
 =========================
 
-A **chat application** built using a **microservice-oriented architecture** with **Node.js**, **Express**, **Docker**, and **Docker Compose**. This app features two distinct services for **authentication** and **chat**, a centralized **API Gateway**, and database separation using **MSSQL** and **MongoDB**.
+A **chat application** built using a **microservice-oriented architecture** with **Node.js**, **Express**, **Docker**, and **Docker Compose**. This app features two distinct services for **authentication** and **chat**, a centralized **API Gateway**, and database separation using **MSSQL** and **MongoDB**. Authentication is handled through **serverless login sessions** using **JWTs** stored in **HTTP-only cookies** for Security best practices. Implemented a simple **Role-Based Access Control** (RBAC) ideal for scaling and adding complexity to the application.
 
 📦 Architecture Overview
 ------------------------
 
 This application is divided into the following main components:
+
+![alt text](./utils-presentation/App-Arhitecture.png)
 
 ### The Frontend
 
@@ -111,8 +113,6 @@ Each service folder contains its own:
 
 ### Steps to Run
 
-
-
 The services will be available at:
 
 *   API Gateway: http://localhost:4000
@@ -141,8 +141,6 @@ The services will be available at:
 *   GET /chat/messages/:userID2  **`Route to get chat history between two users`**
 
 *   GET /chat/conversations  **`Route to get chat history for a specific user`**
-    
-
     
 
 📌 Future Improvements
