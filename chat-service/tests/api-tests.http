@@ -37,12 +37,14 @@ GET http://localhost:3002/api/chat/conversations
 
 GET http://localhost:3002/api/chat/messages/4
 
-###send a message with auth middleware
 
-POST http://localhost:3002/api/chat/messages
+
+###Initializa a conversation from the server, without the auth middleware
+POST http://localhost:3002/chat/initialize-conversation
 Content-Type: application/json
 
 {
-    "receiverId": "7",
-    "message": "Hello, this is a test message. Have you received it?"
+    "senderId": "10",
+    "receiverId": "4",
+    "message": "Hello, this message was sent from the server to initialize the conversation."
 }

@@ -1,0 +1,8 @@
+
+POST http://localhost:4000/chat-gateway/chat/messages
+Content-Type: application/json
+
+{
+    "receiverId": "9",
+    "message": "Hello, this message was sent from the server to initialize the conversation."
+}

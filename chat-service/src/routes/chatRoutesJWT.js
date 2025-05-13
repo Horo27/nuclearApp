@@ -1,5 +1,5 @@
 const express = require('express');
-const { sendMessage, getChatHistory, getConversations } = require('../controllers/chatControllerJWT');
+const { sendMessage, getChatHistory, getConversations, initializeConversation } = require('../controllers/chatControllerJWT');
 const authorize = require('../utils/authorize') //authorize is mapped by docker to the authorize inside the login-service
 
 const router = express.Router();
@@ -12,5 +12,8 @@ router.get('/messages/:userId2', authorize(['user','admin']), getChatHistory);
 
 // Route to get chat history for a specific user
 router.get('/conversations', authorize(['user','admin']), getConversations);
+
+// Initialize a conversation
+router.post('/initialize-conversation', initializeConversation);
 
 module.exports = router;

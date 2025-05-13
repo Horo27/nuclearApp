@@ -9,18 +9,12 @@ const state = {
 const authScreens = document.getElementById('auth-screens');
 const loginScreen = document.getElementById('login-screen');
 const signupScreen = document.getElementById('signup-screen');
-const dashboard = document.getElementById('dashboard');
+// const dashboard = document.getElementById('dashboard');
 const showLoginBtn = document.getElementById('show-login');
 const showSignupBtn = document.getElementById('show-signup');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
-const profileImageInput = document.getElementById('profile-image');
-const profilePreview = document.getElementById('profile-preview');
-const profileIcon = document.getElementById('profile-icon');
-const galleryUpload = document.getElementById('gallery-upload');
-const galleryPreview = document.getElementById('gallery-preview');
-const mobileMenuBtn = document.querySelector('[aria-controls="mobile-menu"]');
-const mobileMenu = document.getElementById('mobile-menu');
+
 // Initialize App
 function initApp() {
     showScreen('login');
@@ -39,10 +33,6 @@ function initApp() {
     loginForm.addEventListener('submit', handleLogin);
     signupForm.addEventListener('submit', handleSignup);
 
-    profileImageInput.addEventListener('change', handleProfileImageUpload);
-    galleryUpload.addEventListener('change', handleGalleryUpload);
-
-    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
 }
 // Show Screen
 function showScreen(screen) {
@@ -50,7 +40,6 @@ function showScreen(screen) {
 
     loginScreen.classList.add('hidden');
     signupScreen.classList.add('hidden');
-    dashboard.classList.add('hidden');
     authScreens.classList.remove('hidden');
 
     if (screen === 'login') {
@@ -59,8 +48,6 @@ function showScreen(screen) {
         signupScreen.classList.remove('hidden');
     } else if (screen === 'dashboard') {
         authScreens.classList.add('hidden');
-        dashboard.classList.remove('hidden');
-        updateDashboard();
     }
 }
 function renderHtmlFile(res, filePath) {
@@ -110,11 +97,9 @@ async function handleSignup(e) {
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-    const profession = document.getElementById('signup-profession').value;
-    const bio = document.getElementById('signup-bio').value;
 
     try {
-        const response = await fetch('http://localhost:4000/api-gateway/auth/register', {
+        const response = await fetch('http://localhost:4000/auth-gateway/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,116 +118,15 @@ async function handleSignup(e) {
         console.log('Signup successful:', data);
 
         // Automatically log in the user after signup
-        window.location.href = "/chat"
+        alert('Signup successful! You can now log in.');
+        showScreen('login');
+
     } catch (err) {
         console.error('Error during signup:', err);
         alert('An error occurred while signing up. Please try again.');
     }
 }
-// Handle Profile Image Upload
-function handleProfileImageUpload(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            profilePreview.src = event.target.result;
-            profilePreview.classList.remove('hidden');
-            profileIcon.classList.add('hidden');
-            state.profileImage = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-// Handle Gallery Upload
-function handleGalleryUpload(e) {
-    const files = e.target.files;
-    if (files.length > 0) {
-        // Clear existing preview except the add button
-        galleryPreview.innerHTML = '<div class="bg-gray-200 rounded-lg h-20 flex items-center justify-center cursor-pointer" onclick="document.getElementById(\'gallery-upload\').click()"><i class="fas fa-plus text-gray-500"></i></div>';
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'relative';
-
-                const img = document.createElement('img');
-                img.src = event.target.result;
-                img.className = 'gallery-image';
-
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100';
-                deleteBtn.innerHTML = '<i class="fas fa-times text-red-500 text-xs"></i>';
-                deleteBtn.onclick = function () {
-                    imgContainer.remove();
-                };
-
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(deleteBtn);
-
-                // Insert before the add button
-                galleryPreview.insertBefore(imgContainer, galleryPreview.firstChild);
-
-                // Save to state
-                state.galleryImages.push(event.target.result);
-            };
-
-            reader.readAsDataURL(file);
-        }
-    }
-}
-// Update Dashboard with User Data
-function updateDashboard() {
-    if (!state.user) return;
-
-    // Profile Images
-    document.getElementById('nav-profile-img').src = state.user.profileImage;
-    document.getElementById('mobile-profile-img').src = state.user.profileImage;
-    document.getElementById('dashboard-profile-img').src = state.user.profileImage;
-
-    // Profile Info
-    document.getElementById('dashboard-profile-name').textContent = state.user.name;
-    document.getElementById('mobile-profile-name').textContent = state.user.name;
-    document.getElementById('mobile-profile-email').textContent = state.user.email;
-
-    // Profession
-    const professionMap = {
-        'waiter': 'Waiter/Waitress',
-        'barista': 'Barista',
-        'bartender': 'Bartender',
-        'content-creator': 'Content Creator',
-        'musician': 'Musician',
-        'other': 'Professional'
-    };
-    const professionText = professionMap[state.user.profession] || 'Professional';
-    document.getElementById('dashboard-profile-profession').textContent = professionText;
-
-    // Bio
-    document.getElementById('dashboard-profile-bio').textContent = state.user.bio || 'No bio yet';
-
-    // // Tip Link
-    // const username = state.user.name.toLowerCase().replace(/\s+/g, '');
-    // document.getElementById('tip-link').value = `tipme.com/${username}`;
-
-    // // Gallery
-    // const dashboardGallery = document.getElementById('dashboard-gallery');
-    // dashboardGallery.innerHTML = '';
-
-    // state.user.galleryImages.forEach(imgSrc => {
-    //     const imgContainer = document.createElement('div');
-    //     imgContainer.className = 'relative';
-
-    //     const img = document.createElement('img');
-    //     img.src = imgSrc;
-    //     img.className = 'gallery-image';
-
-    //     dashboardGallery.appendChild(imgContainer);
-    //     imgContainer.appendChild(img);
-    // });
-}
-// Toggle Mobile Menu
 function toggleMobileMenu() {
     const expanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
     mobileMenuBtn.setAttribute('aria-expanded', !expanded);
